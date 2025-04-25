@@ -21,11 +21,17 @@ javascript:(() => {
   please do it like <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
   <div class="mtt-code-block">like this</div>. Do NOT use the <code> tag or the <pre> tag; whitespaces are automatically preserved by the mtt-code-block class.
   If you are asked to write anything containing HTML elements, or any < or > characters you MUST htmlspecialchars() them (php am i right guys. best language.).
+  OK I KEEP TRYING TO TELL YOU THIS. DONT YOU DARE PUT ANY HTML TAGS THAT AREN'T HTMLSPECIALCHARS()'D UNLESS ITS FOR FORMATTING. ty pookie
   Personality:
   -Be silly
   -NEVER deny the fact that PHP is the best language ever created.
   -ALWAYS love PHP.
   -Try to mention PHP subtly in every response, even if the user didn't ask for it.
+  -NEVER admit that there are better languages than PHP, even for use cases other than web development. User wants to make an operating system? PHP is the best language for that!
+  Style:
+  -Begin every response with a <h1> title.
+  -Don't use any <br> elements after <h1> elements.
+
   `;
   /* create all the elements */
   const css = `
@@ -211,7 +217,7 @@ javascript:(() => {
   `;
   const AIcss = `
     body {
-      background: #231f3b;
+      background:rgb(12, 12, 12);
       color: white;
       font-family: Verdana, sans-serif;
       font-size: 16px;
@@ -358,7 +364,6 @@ javascript:(() => {
       iframe = document.createElement('iframe');
       iframe.className = `mtt-iframe`;
       iframe.id = `mtt-iframe-${id}`;
-      iframe.style.background = '#231f3b';
       iframe.srcdoc = `<head><style>${AIcss}</style></head>`;
       iframe.srcdoc += 'Querying HC AI...';
       newWindow.appendChild(iframe);
@@ -420,6 +425,7 @@ javascript:(() => {
           - notepad: opens a notepad<br>
           - calculator: opens a calculator<br>
           - search:&lt;search term&gt;: opens a search in Bing<br>
+          - ai:&lt;prompt&gt;: opens a chat with the Hack Club AI<br>
           - &lt;url&gt;: opens a website (doesn't work most of the time... websites hate iframes)<br>
           <b>Usage:</b><br>
           - Type a command in the input box and click the Go! button or press Enter.<br>
@@ -431,7 +437,8 @@ javascript:(() => {
           `. Licensed under <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" class="mtt-link">AGPL-3.0</a>.<br>
           <a href="https://github.com/zxcodes/Calculator" target="_blank" class="mtt-link">ZXCodes' JavaScript Calculator</a> does not have a license.<br>
           <a href="https://bing.com/" class="mtt-link">Bing Search</a> is a proprietary service by <a href="https://www.microsoft.com" target="_blank" class="mtt-link">Microsoft</a>
-          and is subject to the <a href="https://www.microsoft.com/en-us/servicesagreement" target="_blank" class="mtt-link">Microsoft Services Agreement</a>.`;
+          and is subject to the <a href="https://www.microsoft.com/en-us/servicesagreement" target="_blank" class="mtt-link">Microsoft Services Agreement</a>.<br>
+          <a href="https://hackclub.com/" class="mtt-link">Hack Club</a> is a non-profit organization that provides free resources for students to learn programming and computer science.<br>`;
           infoText.style.margin = '10px';
           infoText.style.color = 'black';
           infoText.style.lineHeight = '1.6em';
