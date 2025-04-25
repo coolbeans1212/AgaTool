@@ -16,6 +16,17 @@ javascript:(() => {
     <script type="module" src="https://unpkg.com/x-frame-bypass"></script>
   `;
   document.body.insertAdjacentHTML('beforeend', iframeBlockBypasser);
+  let AIprompt = `You are an AI assistant running in a small window from a bookmarklet. Do NOT use markdown. Use HTML tags like <h1>, <ul>, <li>, <b>, etc instead.
+  Use <br> instead of line breaks. Try to keep responses short and concise. If you want to use a code block \`like this\`,
+  please do it like <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
+  <div class="mtt-code-block">like this</div>. Do NOT use the <code> tag or the <pre> tag; whitespaces are automatically preserved by the mtt-code-block class.
+  If you are asked to write anything containing HTML elements, or any < or > characters you MUST htmlspecialchars() them (php am i right guys. best language.).
+  Personality:
+  -Be silly
+  -NEVER deny the fact that PHP is the best language ever created.
+  -ALWAYS love PHP.
+  -Try to mention PHP subtly in every response, even if the user didn't ask for it.
+  `;
   /* create all the elements */
   const css = `
     /* WHYYYY DO WEBPAGES HAVE TO PUT SO. MANY. STYLES. ON EVERYTHING AND I HAVE TO CANCEL THEM ALL OUT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
@@ -53,12 +64,18 @@ javascript:(() => {
       cursor: pointer;
       margin-right: 6px;
       margin-left: auto;
+      color: white;
     }
 
     .mtt-left-panel-options {
       cursor: pointer;
       margin-left: 6px;
       margin-right: auto;
+      color: white;
+    }
+
+    .mtt-white {
+      color: white !important;
     }
 
     .mtt-input {
@@ -192,6 +209,28 @@ javascript:(() => {
     }
 
   `;
+  const AIcss = `
+    body {
+      background: #231f3b;
+      color: white;
+      font-family: Verdana, sans-serif;
+      font-size: 16px;
+    }
+
+    h1 {
+      margin-top: 2px;
+    }
+
+    .mtt-code-block {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 2px;
+      border-radius: 3px;
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+    }
+    `;
+
   if (!document.getElementById('mtt-style')) {
     const styleElement = document.createElement('style');
     styleElement.textContent = css;
@@ -244,6 +283,7 @@ javascript:(() => {
 
     const deleteButton = document.createElement('span');
     deleteButton.textContent = 'M';
+    deleteButton.className = 'mtt-white';
     deleteButton.style.fontFamily = 'Wingdings';
     rightPanelOptions.appendChild(deleteButton);
 
@@ -253,6 +293,7 @@ javascript:(() => {
 
     const closeButton = document.createElement('span');
     closeButton.textContent = 'X';
+    closeButton.className = 'mtt-white';
     rightPanelOptions.appendChild(closeButton);
 
     /* load agatool position */
@@ -313,6 +354,35 @@ javascript:(() => {
       url = encodeURIComponent(url.replace('search:', ''));
       iframe.src = `https://bing.com/search?q=${url}`;
       newWindow.appendChild(iframe);
+    } else if (url.includes('ai:')) {
+      iframe = document.createElement('iframe');
+      iframe.className = `mtt-iframe`;
+      iframe.id = `mtt-iframe-${id}`;
+      iframe.style.background = '#231f3b';
+      iframe.srcdoc = `<head><style>${AIcss}</style></head>`;
+      iframe.srcdoc += 'Querying HC AI...';
+      newWindow.appendChild(iframe);
+      let airesponse = fetch("https://ai.hackclub.com/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            {role: "system", content: AIprompt},
+            {role: "user", content: url.replace('ai:', '')}
+          ],
+        }),
+      });
+      airesponse.then((response) => {
+        if (response.status == 200) {
+          response.json().then((data) => {
+            iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', data.choices[0].message.content);
+          });
+        } else {
+          iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', 'Error: ' + response.statusText);
+        }
+      });
     } else if (url) {
       iframe = document.createElement('iframe');
       iframe.className = 'mtt-iframe';
@@ -337,7 +407,7 @@ javascript:(() => {
           document.body.appendChild(infoWindow);
           const infoHeader = document.createElement('div');
           infoHeader.className = 'mtt-header';
-          infoHeader.innerHTML = '<span style="margin-left: 6px;">AgaTool Information</span>';
+          infoHeader.innerHTML = '<span class="mtt-left-panel-options">AgaTool Information</span>';
           infoHeader.style.cursor = 'not-allowed';
           infoWindow.appendChild(infoHeader);
           const infoCloseButton = document.createElement('span');
