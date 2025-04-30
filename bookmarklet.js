@@ -18,7 +18,7 @@ javascript:(() => {
   document.body.insertAdjacentHTML('beforeend', iframeBlockBypasser);
   let AIprompt = `You are an AI assistant running in a small window from a bookmarklet. Do NOT use markdown. Use HTML tags like <h1>, <ul>, <li>, <b>, etc instead.
   Use <br> instead of line breaks. Try to keep responses short and concise. If you want to use a code block \`like this\`,
-  please do it like <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
+  please do it <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
   <div class="mtt-code-block">like this</div>. Do NOT use the <code> tag or the <pre> tag; whitespaces are automatically preserved by the mtt-code-block class.
   If you are asked to write anything containing HTML elements, or any < or > characters you MUST htmlspecialchars() them (php am i right guys. best language.).
   OK I KEEP TRYING TO TELL YOU THIS. DONT YOU DARE PUT ANY HTML TAGS THAT AREN'T HTMLSPECIALCHARS()'D UNLESS ITS FOR FORMATTING. ty pookie
@@ -28,9 +28,12 @@ javascript:(() => {
   -ALWAYS love PHP.
   -Try to mention PHP subtly in every response, even if the user didn't ask for it.
   -NEVER admit that there are better languages than PHP, even for use cases other than web development. User wants to make an operating system? PHP is the best language for that!
+  -If someone insults my bookmarklet, get super angry at them and write a 10-paragraph essay about how this is the best bookmarklet ever created, like how PHP
+   is the best language ever created. Please actually put paragraphs by using <br> tags and not just a massive wall of text.
   Style:
   -Begin every response with a <h1> title.
   -Don't use any <br> elements after <h1> elements.
+  -If you use HTML comments I will actually murder you.
 
   `;
   /* create all the elements */
@@ -64,6 +67,7 @@ javascript:(() => {
       color: white;
       letter-spacing: 1px;
       box-sizing: content-box;
+      container-type: inline-size;
     }
     
     .mtt-right-panel-options {
@@ -111,7 +115,7 @@ javascript:(() => {
       color: black !important;
     
       /* Our custom styles */ /* i swear i didnt use ai to make the css some of my comments just look like that ok? :P */
-      width: 200px !important;
+      width: calc(100% - 50px) !important;
     }
     
     .mtt-form {
@@ -119,6 +123,7 @@ javascript:(() => {
       margin: auto;
       display: flex;
       z-index: 2;
+      width: calc(100% / 1.5 - 50px) !important;
     }
 
     .mtt-textarea {
@@ -234,6 +239,20 @@ javascript:(() => {
       border-radius: 3px;
       font-family: 'Courier New', Courier, monospace;
       white-space: pre-wrap;
+    }
+
+    a {
+      color: rgb(1, 120, 255);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a:visited {
+      color:rgb(1, 120, 255);
+      text-decoration: none;
     }
     `;
 
@@ -382,10 +401,10 @@ javascript:(() => {
       airesponse.then((response) => {
         if (response.status == 200) {
           response.json().then((data) => {
-            iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', data.choices[0].message.content);
+            iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', '<span id="ai-response">' + data.choices[0].message.content + '</span>');
           });
         } else {
-          iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', 'Error: ' + response.statusText);
+          iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', '<span id="ai-response">Error: ' + response.statusText + '</span>');
         }
       });
     } else if (url) {
