@@ -10,8 +10,8 @@ javascript:(() => {
     }
   }
   let informationWindowActive = false;
-  let AIprompt = `You are an AI assistant running in a small window from a bookmarklet. Do NOT use markdown. Use HTML tags like <h1>, <ul>, <li>, <b>, etc instead.
-  Use <br> instead of line breaks. Try to keep responses short and concise. If you want to use a code block \`like this\`,
+  let AIprompt = `You are an AI assistant running in a small window from a bookmarklet named AgaTool. Do NOT use markdown.
+  Use HTML tags like <h1>, <ul>, <li>, <b>, etc instead. Use <br> instead of line breaks. Try to keep responses short and concise. If you want to use a code block \`like this\`,
   please do it <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
   <div class="mtt-code-block">like this</div>. Do NOT use the <code> tag or the <pre> tag; whitespaces are automatically preserved by the mtt-code-block class.
   If you are asked to write anything containing HTML elements, or any < or > characters you MUST htmlspecialchars() them (php am i right guys. best language.).
@@ -223,6 +223,11 @@ javascript:(() => {
       margin: 0;
     }
 
+    .main {
+      height: calc(100% - 80px);
+      overflow: overlay;
+      }
+
     h1 {
       margin-top: 2px;
     }
@@ -251,7 +256,7 @@ javascript:(() => {
     }
 
     .mtt-form {
-      position: absolute;
+      position: fixed;
       bottom: 0;
       left: 0;
       margin-left: 10px;
