@@ -10,12 +10,6 @@ javascript:(() => {
     }
   }
   let informationWindowActive = false;
-  /* initiate an iframe bypass block bypass */
-  const iframeBlockBypasser = `
-    <script src="https://unpkg.com/@ungap/custom-elements-builtin"></script>
-    <script type="module" src="https://unpkg.com/x-frame-bypass"></script>
-  `;
-  document.body.insertAdjacentHTML('beforeend', iframeBlockBypasser);
   let AIprompt = `You are an AI assistant running in a small window from a bookmarklet. Do NOT use markdown. Use HTML tags like <h1>, <ul>, <li>, <b>, etc instead.
   Use <br> instead of line breaks. Try to keep responses short and concise. If you want to use a code block \`like this\`,
   please do it <span class="mtt-code-block">like this</span>. If you want to use a code block \`\`\`like this\`\`\`, please do it 
@@ -383,10 +377,12 @@ javascript:(() => {
       iframe = document.createElement('iframe');
       iframe.className = `mtt-iframe`;
       iframe.id = `mtt-iframe-${id}`;
-      iframe.srcdoc = `<head><style>${AIcss}</style></head>`;
-      iframe.srcdoc += 'Querying HC AI...';
       newWindow.appendChild(iframe);
-      let airesponse = fetch("https://ai.hackclub.com/chat/completions", {
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(`<head><style>${AIcss}</style></head><body><div id="main">Querying HC AI...</div></body>`);
+      doc.close(); 
+      let aiResponse = fetch("https://ai.hackclub.com/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -398,13 +394,21 @@ javascript:(() => {
           ],
         }),
       });
-      airesponse.then((response) => {
+      aiResponse.then((response) => {
         if (response.status == 200) {
           response.json().then((data) => {
-            iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', '<span id="ai-response">' + data.choices[0].message.content + '</span>');
+            const doc = iframe.contentWindow.document;
+            const mainDiv = doc.getElementById('main');
+            if (mainDiv) {
+              mainDiv.innerHTML = '<div id="ai-response">' + data.choices[0].message.content + '</div>';
+            }
           });
         } else {
-          iframe.srcdoc = iframe.srcdoc.replace('Querying HC AI...', '<span id="ai-response">Error: ' + response.statusText + '</span>');
+          const doc = iframe.contentWindow.document;
+          const mainDiv = doc.getElementById('main');
+          if (mainDiv) {
+            mainDiv.innerHTML = '<div id="ai-response">Error: ' + response.statusText + '</div>';
+          }
         }
       });
     } else if (url) {
