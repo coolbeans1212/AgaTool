@@ -220,6 +220,7 @@ javascript:(() => {
       color: white;
       font-family: Verdana, sans-serif;
       font-size: 16px;
+      margin: 0;
     }
 
     h1 {
@@ -247,6 +248,53 @@ javascript:(() => {
     a:visited {
       color:rgb(1, 120, 255);
       text-decoration: none;
+    }
+
+    .mtt-form {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      margin-left: 10px;
+      margin-right: 10px;
+      width: calc(100% - 40px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgb(29, 29, 29);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .mtt-input {
+      background-color: rgb(1, 1, 1);
+      border: none;
+      border-radius: 5px;
+      height: 30px;
+      width: calc(100% - 100px);
+      color: white;
+    }
+
+    .mtt-button {
+      background: rgb(1, 1, 1);
+      color: rgb(255, 255, 255);
+      border: none;
+      height: 30px;
+      border-radius: 5px;
+      margin-left: 10px;
+      width: 50px;
+      cursor: pointer;
+    }
+
+    .mtt-ai-response, .mtt-ai-user {
+      width: 80%;
+      background: rgb(29, 29, 29);
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    .mtt-ai-user {
+      margin-left: auto;
     }
     `;
 
@@ -373,42 +421,61 @@ javascript:(() => {
       url = encodeURIComponent(url.replace('search:', ''));
       iframe.src = `https://bing.com/search?q=${url}`;
       newWindow.appendChild(iframe);
-    } else if (url.includes('ai:')) {
+    } else if (url == 'ai') {
       iframe = document.createElement('iframe');
       iframe.className = `mtt-iframe`;
       iframe.id = `mtt-iframe-${id}`;
       newWindow.appendChild(iframe);
       const doc = iframe.contentWindow.document;
       doc.open();
-      doc.write(`<head><style>${AIcss}</style></head><body><div id="main">Querying HC AI...</div></body>`);
-      doc.close(); 
-      let aiResponse = fetch("https://ai.hackclub.com/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: [
-            {role: "system", content: AIprompt},
-            {role: "user", content: url.replace('ai:', '')}
-          ],
-        }),
-      });
-      aiResponse.then((response) => {
-        if (response.status == 200) {
-          response.json().then((data) => {
-            const doc = iframe.contentWindow.document;
-            const mainDiv = doc.getElementById('main');
-            if (mainDiv) {
-              mainDiv.innerHTML = '<div id="ai-response">' + data.choices[0].message.content + '</div>';
+      doc.write(`<head><style>${AIcss}</style></head><body id="body"><div id="main"></div>`);
+      doc.close();
+      const aiForm = doc.createElement('form');
+      aiForm.className = 'mtt-form';
+      aiForm.innerHTML = '<input type="text" class="mtt-input" id="mtt-ai-input" placeholder="Ask me anything..." /> <button type="button" class="mtt-button" id="mtt-ai-button">Send</button>';
+      doc.getElementById('body').appendChild(aiForm);
+      let aiInput = doc.getElementById('mtt-ai-input');
+      let aiSubmitButton = doc.getElementById('mtt-ai-button');
+
+      aiSubmitButton.addEventListener('click', () => {
+
+        let input = aiInput.value;
+        if (input) {
+          const userMessage = doc.createElement('div');
+          userMessage.className = 'mtt-ai-user';
+          userMessage.innerHTML = input;
+          doc.getElementById('main').appendChild(userMessage);
+          const message = doc.createElement('div');
+          aiInput.value = '';
+          let airesponse = fetch("https://ai.hackclub.com/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messages: [
+                {role: "system", content: AIprompt},
+                {role: "user", content: input}
+              ],
+            }),
+          });
+          airesponse.then((response) => {
+            if (response.ok) {
+              response.json().then((data) => {
+                message.innerHTML = `<div class="mtt-ai-response">${data.choices[0].message.content}</div>`;
+                doc.getElementById('main').appendChild(message);
+              });
+            } else {
+              message.innerHTML = `<div class="mtt-ai-response">Error: ${response.status} ${response.statusText}</div>`;
+              doc.getElementById('main').appendChild(message);
             }
           });
-        } else {
-          const doc = iframe.contentWindow.document;
-          const mainDiv = doc.getElementById('main');
-          if (mainDiv) {
-            mainDiv.innerHTML = '<div id="ai-response">Error: ' + response.statusText + '</div>';
-          }
+        }
+      });
+      aiInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          aiSubmitButton.click();
         }
       });
     } else if (url) {
