@@ -514,8 +514,8 @@ javascript:(() => {
           <b>Available commands:</b><br>
           - notepad: opens a notepad<br>
           - calculator: opens a calculator<br>
+          - ai: opens the AIgaTool interface<br>
           - search:&lt;search term&gt;: opens a search in Bing<br>
-          - ai:&lt;prompt&gt;: opens a chat with the Hack Club AI<br>
           - &lt;url&gt;: opens a website (doesn't work most of the time... websites hate iframes)<br>
           <b>Usage:</b><br>
           - Type a command in the input box and click the Go! button or press Enter.<br>
