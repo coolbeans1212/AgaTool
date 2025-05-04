@@ -88,14 +88,12 @@ javascript:(() => {
       -webkit-appearance: textfield !important;
       padding: 1px !important;
       background-color: white !important;
-      border: 2px inset !important;
       -webkit-rtl-ordering: logical !important;
       -webkit-user-select: text !important;
       cursor: auto !important;
       margin: 0 !important; /* figuring out how to make stuff cascade correctly instead of using !important isnt important enough */
       font: -webkit-small-control !important;
       text-rendering: auto !important;
-      color: initial !important;
       letter-spacing: normal !important;
       word-spacing: normal !important;
       line-height: normal !important;
@@ -104,12 +102,12 @@ javascript:(() => {
       text-shadow: none !important;
       display: inline-block !important;
       text-align: start !important;
-      border-radius: 0 !important;
       height: auto !important;
       color: black !important;
-    
       /* Our custom styles */ /* i swear i didnt use ai to make the css some of my comments just look like that ok? :P */
       width: calc(100% - 50px) !important;
+      border: none !important;
+      border-radius: 3px !important;
     }
     
     .mtt-form {
@@ -172,12 +170,12 @@ javascript:(() => {
       padding-inline: 6px !important;
       box-sizing: border-box !important;
       /* Our custom styles */
-      font-family: Verdana, sans-serif !important;
+      font-family: sans-serif !important;
       border: none !important;
       border-radius: 3px !important;
       text-align: center !important;
       cursor: pointer !important;
-      background-color: rgb(200 248 255) !important;
+      background-color:rgb(255, 255, 255) !important;
     }
 
     .mtt-big-button {
@@ -185,6 +183,7 @@ javascript:(() => {
       margin-left: calc(50% - 30px) !important;
       width: 60px !important;
       height: 40px !important;
+      font-family: Verdana, sans-serif !important;
     }
 
     .mtt-resizer {
@@ -309,6 +308,19 @@ javascript:(() => {
     styleElement.id = `mtt-style`;
     document.head.appendChild(styleElement);
   }
+
+  function htmlspecialchars(text) { /* php am i right guys */
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
   function createEverything(id) {
     const newWindow = document.createElement('div');
     newWindow.className = 'mtt-window';
@@ -444,7 +456,7 @@ javascript:(() => {
 
       aiSubmitButton.addEventListener('click', () => {
 
-        let input = aiInput.value;
+        let input = htmlspecialchars(aiInput.value);
         if (input) {
           const userMessage = doc.createElement('div');
           userMessage.className = 'mtt-ai-user';
