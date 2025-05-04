@@ -300,6 +300,12 @@ javascript:(() => {
     .mtt-ai-user {
       margin-left: auto;
     }
+
+    .model-text {
+      font-size: 10px;
+      display: table;
+      margin: 0 auto;
+    }
     `;
 
   if (!document.getElementById('mtt-style')) {
@@ -319,6 +325,17 @@ javascript:(() => {
     };
     
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
+  async function fetchAndReturnString(url) {
+    const response = await fetch(url);
+    if (response.ok) {
+      const text = await response.text();
+      return text;
+    } else {
+      console.error(`Error fetching ${url}: ${response.status} ${response.statusText}`);
+      return null;
+    }
   }
 
   function createEverything(id) {
@@ -447,6 +464,13 @@ javascript:(() => {
       doc.open();
       doc.write(`<head><style>${AIcss}</style></head><body id="body"><div id="main"></div>`);
       doc.close();
+      const modelText = doc.createElement('span');
+      modelText.className = 'model-text';
+      modelText.innerHTML = 'Current model: ';
+      doc.getElementById('body').appendChild(modelText);
+      fetchAndReturnString('https://ai.hackclub.com/model').then(model => {
+        modelText.innerHTML = 'Current model: ' + (model ?? 'Unknown model');
+      });
       const aiForm = doc.createElement('form');
       aiForm.className = 'mtt-form';
       aiForm.innerHTML = '<input type="text" class="mtt-input" id="mtt-ai-input" placeholder="Ask me anything..." /> <button type="button" class="mtt-button" id="mtt-ai-button">Send</button>';
