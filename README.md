@@ -24,6 +24,7 @@ Here are the available commands you can use in the input field:
 
 - **`notepad`**: Opens a notepad where you can write and save notes.
 - **`calculator`**: Launches a simple calculator application.
+- **`ai`**: Opens the AIgaTool interface, powered by Hack Club.
 - **`search:<query>`**: Search Bing for any query (e.g., `search:JavaScript tutorials`).
 - **`<url>`**: Opens the specified URL in an iframe (e.g., `https://example.com`).
 
@@ -67,3 +68,7 @@ AgaTool is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/ag
 ---
 
 ![9e87e28f51c6caa8](https://github.com/user-attachments/assets/eaee3476-333d-40c3-97f7-5265d7f98caf)
+
+---
+
+This bookmarklet is fully supported on Chromium-based browsers only. Firefox may still work, but expect bugs.
