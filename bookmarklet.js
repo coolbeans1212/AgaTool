@@ -40,13 +40,13 @@ javascript:(() => {
       z-index: 1000000000000;
       width: 375px;
       height: 250px;
-      background-image: linear-gradient(135deg, rgba(240, 240, 240, 0.9), rgba(206, 206, 206, 0.9));
+      background-image: linear-gradient(135deg, rgba(240, 240, 240, 0.8), rgba(206, 206, 206, 0.6));
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
       box-sizing: content-box;
       color: black;
       font-family: Verdana, sans-serif;
       font-size: 14px;
-
+      backdrop-filter: blur(5px) opacity(0.85);
     }
     .mtt-header {
       display: flex;
