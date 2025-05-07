@@ -295,6 +295,7 @@ javascript:(() => {
       padding: 10px;
       border-radius: 10px;
       margin: 10px;
+      overflow-wrap: break-word;
     }
 
     .mtt-ai-user {
@@ -328,12 +329,17 @@ javascript:(() => {
   }
 
   async function fetchAndReturnString(url) {
-    const response = await fetch(url);
-    if (response.ok) {
-      const text = await response.text();
-      return text;
-    } else {
-      console.error(`Error fetching ${url}: ${response.status} ${response.statusText}`);
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const text = await response.text();
+        return text;
+      } else {
+        console.error(`Error fetching ${url}: ${response.status} ${response.statusText}`);
+        return null;
+      }
+    } catch (e) {
+      console.error(`Error fetching ${url}: ${e}`);
       return null;
     }
   }
@@ -456,6 +462,14 @@ javascript:(() => {
       iframe.src = `https://bing.com/search?q=${url}`;
       newWindow.appendChild(iframe);
     } else if (url == 'ai') {
+      let conversationObject = { /* i miss my associative arrays... :'( */
+        messages: [
+          {role: "system", content: AIprompt},
+        ],
+      };
+      if (localStorage.getItem(`mtt-${id}-conversation`)) {
+        conversationObject = JSON.parse(localStorage.getItem(`mtt-${id}-conversation`));
+      }
       iframe = document.createElement('iframe');
       iframe.className = `mtt-iframe`;
       iframe.id = `mtt-iframe-${id}`;
@@ -468,9 +482,14 @@ javascript:(() => {
       modelText.className = 'model-text';
       modelText.innerHTML = 'Current model: ';
       doc.getElementById('body').appendChild(modelText);
-      fetchAndReturnString('https://ai.hackclub.com/model').then(model => {
-        modelText.innerHTML = 'Current model: ' + (model ?? 'Unknown model');
-      });
+      try {
+        fetchAndReturnString('https://ai.hackclub.com/model').then(model => {
+          modelText.innerHTML = 'Current model: ' + (model ?? 'Unknown model');
+        });
+      } catch (e) {
+        modelText.innerHTML = 'Current model: Unknown model';
+        console.log('Error fetching model: ' + e);
+      }
       const aiForm = doc.createElement('form');
       aiForm.className = 'mtt-form';
       aiForm.innerHTML = '<input type="text" class="mtt-input" id="mtt-ai-input" placeholder="Ask me anything..." /> <button type="button" class="mtt-button" id="mtt-ai-button">Send</button>';
@@ -482,34 +501,39 @@ javascript:(() => {
 
         let input = htmlspecialchars(aiInput.value);
         if (input) {
+          aiSubmitButton.disabled = true;
+          aiInput.disabled = true;
+          conversationObject.messages.push({role: "user", content: input});
+          localStorage.setItem(`mtt-${id}-conversation`, JSON.stringify(conversationObject));
           const userMessage = doc.createElement('div');
           userMessage.className = 'mtt-ai-user';
           userMessage.innerHTML = input;
           doc.getElementById('main').appendChild(userMessage);
           const message = doc.createElement('div');
           aiInput.value = '';
-          let airesponse = fetch("https://ai.hackclub.com/chat/completions", {
+            let airesponse = fetch("https://ai.hackclub.com/chat/completions", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              messages: [
-                {role: "system", content: AIprompt},
-                {role: "user", content: input}
-              ],
+              messages: conversationObject.messages,
             }),
-          });
+            });
           airesponse.then((response) => {
             if (response.ok) {
               response.json().then((data) => {
                 message.innerHTML = `<div class="mtt-ai-response">${data.choices[0].message.content}</div>`;
                 doc.getElementById('main').appendChild(message);
+                conversationObject.messages.push(data.choices[0].message);
+                localStorage.setItem(`mtt-${id}-conversation`, JSON.stringify(conversationObject));
               });
             } else {
               message.innerHTML = `<div class="mtt-ai-response">Error: ${response.status} ${response.statusText}</div>`;
               doc.getElementById('main').appendChild(message);
             }
+            aiInput.disabled = false;
+            aiSubmitButton.disabled = false;
           });
         }
       });
@@ -551,7 +575,7 @@ javascript:(() => {
           infoCloseButton.textContent = 'X';
           infoHeader.appendChild(infoCloseButton);
           const infoText = document.createElement('p');
-          infoText.innerHTML = `This is a bookmarklet that allows you to open a small window with an iframe inside it. You can use it to open websites or a notepad.<br>
+          infoText.innerHTML = `This is a bookmarklet that opens a small window on websites to allow you to access a range of useful tools.<br>
           <b>Available commands:</b><br>
           - notepad: opens a notepad<br>
           - calculator: opens a calculator<br>
