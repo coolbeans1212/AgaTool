@@ -30,8 +30,7 @@ javascript:(() => {
   -If you use HTML comments I will actually murder you.
 
   `;
-  let aiApiKey = "\x73\x6b\x63\x30\x66\x39\x34\x32\x66\x64\x33\x31\x66\x30\x34\x64\x63\x30\x61\x64\x35\x34\x39\x34\x32\x65\x39\x35\x61\x32\x38\x30\x30\x34\x35\x32\x65\x61\x65\x31\x30\x32\x61\x61\x31\x64\x34\x33\x35\x36\x61\x39\x30\x35\x33\x37\x65\x61\x36\x63\x31\x66\x63\x30\x65\x37"; 
-  /* yeah yeah "don't put your api keys in client-side code!!!! aaaaaaaa!!!!!" but like i'm not paying for ts anyway sooooooooo */
+  let aiApiKey = "beans_lol"; /* tee hee */
   /* create all the elements */
   const css = `
     /* WHYYYY DO WEBPAGES HAVE TO PUT SO. MANY. STYLES. ON EVERYTHING AND I HAVE TO CANCEL THEM ALL OUT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
@@ -513,10 +512,10 @@ javascript:(() => {
           doc.getElementById('main').appendChild(userMessage);
           const message = doc.createElement('div');
           aiInput.value = '';
-            let airesponse = fetch("https://ai.hackclub.com/proxy/v1/chat/completions", {
+            let airesponse = fetch("https://agatool.net/integration/aiproxy.php", {
             method: "POST",
             headers: {
-              "Authorization": "Bearer " + aiApiKey,
+              "Authorization": aiApiKey,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
