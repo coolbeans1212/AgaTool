@@ -464,7 +464,7 @@ javascript:(() => {
       modelText.innerHTML = 'Current model: ';
       doc.getElementById('body').appendChild(modelText);
       try {
-        fetchAndReturnString('https://ai.hackclub.com/model').then(model => {
+        fetchAndReturnString('https://agatool.net/integration/model.php').then(model => {
           modelText.innerHTML = 'Current model: ' + (model ?? 'Unknown model');
         });
       } catch (e) {
